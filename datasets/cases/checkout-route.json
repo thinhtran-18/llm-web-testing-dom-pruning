@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "case_id": "checkout-route",
+  "goal": "Mở trang thanh toán từ giỏ hàng.",
+  "initial": {
+    "path": "/cart",
+    "fixture_id": "cart-a-one"
+  },
+  "steps": [
+    {
+      "step_id": "checkout",
+      "task": "Bấm Thanh toán trong Giỏ hàng.",
+      "target": {
+        "entity": "Giỏ hàng",
+        "role": "button",
+        "name": "Thanh toán"
+      },
+      "wait": {
+        "timeout_ms": 5000,
+        "settle_ms": 300
+      },
+      "check": {
+        "op": "page_is",
+        "path": "/checkout",
+        "landmark": "Thông tin thanh toán"
+      }
+    }
+  ]
+}

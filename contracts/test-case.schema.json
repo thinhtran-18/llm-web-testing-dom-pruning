@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ca kiểm thử chức năng web v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "fixture_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        }
+      },
+      "required": [
+        "path",
+        "fixture_id"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "step_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "enum": [
+                  "button",
+                  "link",
+                  "textbox",
+                  "combobox",
+                  "checkbox"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "entity",
+              "role",
+              "name"
+            ]
+          },
+          "wait": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timeout_ms": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 60000
+              },
+              "settle_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 60000
+              }
+            },
+            "required": [
+              "timeout_ms",
+              "settle_ms"
+            ]
+          },
+          "check": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "const": "number_delta"
+                  },
+                  "ref": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "entity": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "field": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "entity",
+                      "field"
+                    ]
+                  },
+                  "delta": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "op",
+                  "ref",
+                  "delta"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "const": "page_is"
+                  },
+                  "path": {
+                    "type": "string",
+                    "pattern": "^/"
+                  },
+                  "landmark": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "op",
+                  "path",
+                  "landmark"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "const": "ui_available"
+                  },
+                  "landmark": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "fatal_markers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "op",
+                  "landmark",
+                  "fatal_markers"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "step_id",
+          "task",
+          "target",
+          "wait",
+          "check"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "case_id",
+    "goal",
+    "initial",
+    "steps"
+  ]
+}

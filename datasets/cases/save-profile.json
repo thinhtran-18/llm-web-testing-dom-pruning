@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1",
+  "case_id": "save-profile",
+  "goal": "Lưu hồ sơ và xác nhận giao diện vẫn hoạt động.",
+  "initial": {
+    "path": "/profile",
+    "fixture_id": "profile-ready"
+  },
+  "steps": [
+    {
+      "step_id": "save",
+      "task": "Bấm Lưu trong Hồ sơ.",
+      "target": {
+        "entity": "Hồ sơ",
+        "role": "button",
+        "name": "Lưu"
+      },
+      "wait": {
+        "timeout_ms": 3000,
+        "settle_ms": 200
+      },
+      "check": {
+        "op": "ui_available",
+        "landmark": "Đã lưu hồ sơ",
+        "fatal_markers": [
+          "Ứng dụng không thể tiếp tục"
+        ]
+      }
+    }
+  ]
+}

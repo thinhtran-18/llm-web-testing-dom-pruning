@@ -1,0 +1,41 @@
+[
+  {
+    "case_id": "cart-quantity",
+    "normal": {
+      "variant_id": "normal",
+      "expected_verdict": "PASS",
+      "observable": "Số lượng A từ 1 lên 2."
+    },
+    "fault": {
+      "variant_id": "no-cart-update",
+      "expected_verdict": "ONR",
+      "observable": "Đúng nút A, giỏ đã sẵn sàng, số lượng A giữ nguyên 1 đến hết hạn."
+    }
+  },
+  {
+    "case_id": "checkout-route",
+    "normal": {
+      "variant_id": "normal",
+      "expected_verdict": "PASS",
+      "observable": "Ổn định tại /checkout và thấy Thông tin thanh toán."
+    },
+    "fault": {
+      "variant_id": "wrong-destination",
+      "expected_verdict": "NLE",
+      "observable": "Đúng nút Thanh toán, trang ổn định ở /profile."
+    }
+  },
+  {
+    "case_id": "save-profile",
+    "normal": {
+      "variant_id": "normal",
+      "expected_verdict": "PASS",
+      "observable": "Giao diện hiển thị Đã lưu hồ sơ và trang vẫn hoạt động."
+    },
+    "fault": {
+      "variant_id": "fatal-screen",
+      "expected_verdict": "CRASH",
+      "observable": "Giao diện hiện Ứng dụng không thể tiếp tục và luồng lưu bị chặn."
+    }
+  }
+]

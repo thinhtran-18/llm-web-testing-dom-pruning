@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lệnh của Agent v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "observation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+    },
+    "action": {
+      "enum": [
+        "click",
+        "fill",
+        "select",
+        "check",
+        "uncheck"
+      ]
+    },
+    "target_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+    },
+    "value": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "observation_id",
+    "action",
+    "target_id"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "enum": [
+              "fill",
+              "select"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "value"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "value"
+          ]
+        }
+      }
+    }
+  ]
+}
