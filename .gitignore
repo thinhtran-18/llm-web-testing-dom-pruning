@@ -8,3 +8,7 @@ __pycache__/
 /runs/
 /playwright-report/
 /test-results/
+
+# Word documents and temporary lock files
+*.docx
+~$*.docx
