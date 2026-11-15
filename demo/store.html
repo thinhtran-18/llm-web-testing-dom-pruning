@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Cửa hàng Demo - Web Testing DOM Pruning</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    .catalog { display: flex; gap: 20px; margin-top: 20px; }
+    .product-card { border: 1px solid #ccc; border-radius: 8px; padding: 15px; width: 220px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .product-name { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+    .product-price { color: #e63946; font-size: 16px; margin-bottom: 12px; }
+    .btn-add-to-cart { background: #0077b6; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+    .btn-add-to-cart:hover { background: #023e8a; }
+    .cart-section { margin-top: 30px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .qty-controls button { width: 28px; height: 28px; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #2a9d8f; color: white; padding: 12px 20px; border-radius: 6px; display: none; }
+    .fatal-banner { background: #d90429; color: white; padding: 15px; border-radius: 6px; margin-top: 20px; display: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1 id="catalog-title">Cửa hàng Trực tuyến Demo</h1>
+    <div id="cart-header" data-scope="Header">
+      <span>Giỏ hàng: </span>
+      <span id="cart-badge" class="badge">1</span> sản phẩm
+    </div>
+  </div>
+
+  <div class="catalog" data-scope="Danh mục">
+    <!-- Product A -->
+    <div id="product-card-a" class="product-card" data-scope="Sản phẩm A" data-entity="Sản phẩm A">
+      <div id="product-name-a" class="product-name">Sản phẩm A</div>
+      <div id="product-price-a" class="product-price">100.000đ</div>
+      <button id="btn-add-a" class="btn-add-to-cart" data-testid="btn-add-a">Thêm vào giỏ</button>
+    </div>
+
+    <!-- Product B -->
+    <div id="product-card-b" class="product-card" data-scope="Sản phẩm B" data-entity="Sản phẩm B">
+      <div id="product-name-b" class="product-name">Sản phẩm B</div>
+      <div id="product-price-b" class="product-price">200.000đ</div>
+      <button id="btn-add-b" class="btn-add-to-cart" data-testid="btn-add-b">Thêm vào giỏ</button>
+    </div>
+  </div>
+
+  <!-- Cart Section -->
+  <div id="cart-section" class="cart-section" data-scope="Giỏ hàng">
+    <h2>Giỏ hàng của bạn</h2>
+
+    <!-- Cart item A -->
+    <div id="cart-item-a" class="cart-item" data-scope="Giỏ hàng / Sản phẩm A" data-entity="Sản phẩm A">
+      <span class="item-name">Sản phẩm A</span>
+      <div class="qty-controls">
+        <button class="btn-dec" id="btn-dec-a">-</button>
+        <span class="item-qty" id="cart-item-quantity-a" data-testid="cart_item_quantity_A">1</span>
+        <button class="btn-inc" id="btn-inc-a">+</button>
+      </div>
+      <span class="item-subtotal">100.000đ</span>
+      <button class="btn-remove" id="btn-remove-a">Xóa</button>
+    </div>
+
+    <!-- Cart item B -->
+    <div id="cart-item-b" class="cart-item" data-scope="Giỏ hàng / Sản phẩm B" data-entity="Sản phẩm B" style="display:none;">
+      <span class="item-name">Sản phẩm B</span>
+      <div class="qty-controls">
+        <button class="btn-dec" id="btn-dec-b">-</button>
+        <span class="item-qty" id="cart-item-quantity-b" data-testid="cart_item_quantity_B">0</span>
+        <button class="btn-inc" id="btn-inc-b">+</button>
+      </div>
+      <span class="item-subtotal">0đ</span>
+      <button class="btn-remove" id="btn-remove-b">Xóa</button>
+    </div>
+
+    <div style="margin-top: 15px; font-weight: bold;">
+      Tổng tiền: <span id="cart-total-price">100.000đ</span>
+    </div>
+    <div style="margin-top: 10px;">
+      <button id="btn-checkout" style="padding: 10px 20px; background: #e76f51; color: white; border: none; border-radius: 4px; cursor: pointer;">Thanh toán</button>
+    </div>
+  </div>
+
+  <!-- Profile Section (for save-profile case) -->
+  <div id="profile-section" style="margin-top: 30px; border: 1px solid #ccc; padding: 15px; border-radius: 8px;" data-scope="Hồ sơ">
+    <h2>Thông tin người dùng</h2>
+    <div>
+      <label for="profile-name">Họ và tên:</label>
+      <input type="text" id="profile-name" value="Nguyễn Quang Huy" />
+    </div>
+    <div style="margin-top: 10px;">
+      <button id="btn-save-profile">Lưu</button>
+    </div>
+    <div id="profile-saved-toast" style="display:none; color: green; margin-top: 10px;">Đã lưu hồ sơ</div>
+  </div>
+
+  <div id="toast-message" class="toast">Đã thêm vào giỏ hàng</div>
+  <div id="fatal-error-banner" class="fatal-banner">Ứng dụng không thể tiếp tục</div>
+
+  <script>
+    // Configurable fault injection for experiment runner
+    window.__faultMode = null; // 'no-cart-update', 'wrong-destination', 'fatal-screen'
+
+    document.getElementById('btn-add-a').addEventListener('click', function() {
+      const toast = document.getElementById('toast-message');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+
+      if (window.__faultMode === 'no-cart-update') {
+        // Fault ONR: Toast shown, but cart quantity does not update!
+        return;
+      }
+
+      // Normal behavior: increment quantity of A
+      const qtyEl = document.querySelector('#cart-item-a .item-qty');
+      let q = parseInt(qtyEl.innerText) || 1;
+      q += 1;
+      qtyEl.innerText = q;
+      document.getElementById('cart-badge').innerText = q;
+      document.getElementById('cart-total-price').innerText = (q * 100000).toLocaleString('vi-VN') + 'đ';
+    });
+
+    document.getElementById('btn-add-b').addEventListener('click', function() {
+      const toast = document.getElementById('toast-message');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+
+      const itemB = document.getElementById('cart-item-b');
+      itemB.style.display = 'flex';
+      const qtyEl = document.querySelector('#cart-item-b .item-qty');
+      let q = parseInt(qtyEl.innerText) || 0;
+      q += 1;
+      qtyEl.innerText = q;
+    });
+
+    document.getElementById('btn-checkout').addEventListener('click', function() {
+      if (window.__faultMode === 'wrong-destination') {
+        window.location.hash = '#/profile';
+      } else {
+        window.location.hash = '#/checkout';
+      }
+    });
+
+    document.getElementById('btn-save-profile').addEventListener('click', function() {
+      if (window.__faultMode === 'fatal-screen') {
+        document.getElementById('fatal-error-banner').style.display = 'block';
+      } else {
+        document.getElementById('profile-saved-toast').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
+
